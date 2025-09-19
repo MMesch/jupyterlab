@@ -145,6 +145,17 @@ export class ModalCommandPalette extends Panel {
    */
   protected onActivateRequest(msg: Message): void {
     if (this.isAttached) {
+      // Capture the currently active widget before showing the palette
+      const app = (window as any).jupyterapp;
+      this._previousActiveWidget = app?.shell?.activeWidget;
+      this._previousNotebookMode = undefined;
+      
+      // If it's a notebook, capture its mode
+      if (this._previousActiveWidget && this._previousActiveWidget.content && 
+          this._previousActiveWidget.content.mode !== undefined) {
+        this._previousNotebookMode = this._previousActiveWidget.content.mode;
+      }
+      
       this.show();
       this._commandPalette.activate();
     }
@@ -159,7 +170,51 @@ export class ModalCommandPalette extends Panel {
       case 27: // Escape.
         event.stopPropagation();
         event.preventDefault();
+        
+        // Use the previously captured widget and mode
+        const activeWidget = this._previousActiveWidget;
+        const notebookMode = this._previousNotebookMode;
+        
         this.hideAndReset();
+        
+        // Restore focus and state to the previously active widget after the next frame
+        // to ensure the command palette is fully hidden and DOM is updated
+        requestAnimationFrame(() => {
+          if (activeWidget && !activeWidget.isDisposed) {
+            // Explicitly blur the command palette input if it still has focus
+            if (document.activeElement === this._commandPalette.inputNode) {
+              this._commandPalette.inputNode.blur();
+            }
+            
+            activeWidget.activate();
+            
+            // For notebooks, restore the mode and ensure proper cell focus
+            if (activeWidget.content && activeWidget.content.mode !== undefined) {
+              const notebook = activeWidget.content;
+              
+              // Ensure the notebook has an active cell
+              if (notebook.activeCell) {
+                // Restore the notebook mode with proper focus
+                if (notebookMode) {
+                  notebook.setMode(notebookMode, { focus: true });
+                } else {
+                  // If no saved mode, default to command mode with focus
+                  notebook.setMode('command', { focus: true });
+                }
+                
+                // If setMode didn't properly focus, try focusing manually
+                if (document.activeElement === document.body) {
+                  notebook.node.focus();
+                  
+                  // If that doesn't work, try focusing the active cell directly
+                  if (document.activeElement === document.body && notebook.activeCell) {
+                    notebook.activeCell.node.focus();
+                  }
+                }
+              }
+            }
+          }
+        });
         break;
       default:
         break;
@@ -167,6 +222,8 @@ export class ModalCommandPalette extends Panel {
   }
 
   private _commandPalette: CommandPalette;
+  private _previousActiveWidget: any = null;
+  private _previousNotebookMode: string | undefined = undefined;
 }
 
 export namespace ModalCommandPalette {
