@@ -2180,8 +2180,7 @@ export class MarkdownCell extends AttachmentsCell<IMarkdownCellModel> {
       });
 
     this._cachedHeadingText = this.model.sharedModel.getSource();
-    this._emptyPlaceholder =
-      options.emptyPlaceholder ?? trans.__('Type Markdown and LaTeX: $ α^2 $');
+    this._emptyPlaceholder = options.emptyPlaceholder ?? '';
   }
 
   /**

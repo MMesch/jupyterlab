@@ -744,7 +744,8 @@ export class StaticNotebook extends WindowedList<NotebookViewModel> {
       placeholder: this._notebookConfig.windowingMode !== 'none',
       rendermime,
       showEditorForReadOnlyMarkdown:
-        this._notebookConfig.showEditorForReadOnlyMarkdown
+        this._notebookConfig.showEditorForReadOnlyMarkdown,
+      emptyPlaceholder: this._notebookConfig.markdownEmptyPlaceholder
     };
     const cell = this.contentFactory.createMarkdownCell(options);
     cell.syncCollapse = true;
@@ -1306,9 +1307,14 @@ export namespace StaticNotebook {
      * Whether to show a minimap alongside the notebook.
      *
      * The minimap provides a scroll-synchronized view of the
-     * notebook’s content to help with navigation.
+     * notebook's content to help with navigation.
      */
     showMinimap?: boolean;
+
+    /**
+     * Text to display in empty markdown cells when rendered
+     */
+    markdownEmptyPlaceholder?: string;
   }
 
   /**
@@ -1333,7 +1339,8 @@ export namespace StaticNotebook {
     windowingMode: 'contentVisibility',
     accessKernelHistory: false,
     showInputPlaceholder: true,
-    showMinimap: false
+    showMinimap: false,
+    markdownEmptyPlaceholder: ''
   };
 
   /**

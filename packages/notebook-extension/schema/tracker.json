@@ -744,6 +744,12 @@
       "type": "boolean",
       "default": false
     },
+    "markdownEmptyPlaceholder": {
+      "title": "Empty Markdown Cell Placeholder",
+      "description": "Text to display in empty markdown cells when rendered",
+      "type": "string",
+      "default": ""
+    },
     "rawCellConfig": {
       "title": "Raw Cell Configuration",
       "description": "The configuration for all raw cells; it will override the CodeMirror default configuration.",

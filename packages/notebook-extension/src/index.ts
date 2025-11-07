@@ -2096,7 +2096,9 @@ function activateNotebookHandler(
         | 'contentVisibility',
       accessKernelHistory: settings.get('accessKernelHistory')
         .composite as boolean,
-      showMinimap: settings.get('showMinimap').composite as boolean
+      showMinimap: settings.get('showMinimap').composite as boolean,
+      markdownEmptyPlaceholder: settings.get('markdownEmptyPlaceholder')
+        .composite as string
     };
     setSideBySideOutputRatio(factory.notebookConfig.sideBySideOutputRatio);
     const sideBySideMarginStyle = `.jp-mod-sideBySide.jp-Notebook .jp-Notebook-cell {
